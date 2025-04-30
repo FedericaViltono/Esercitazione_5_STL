@@ -137,7 +137,7 @@ int main()
 
         area = std::abs(area) * 0.5; 
 
-        if (area < epsilon)
+        if (area < epsilon * epsilon) // per coerenza con tolleranza su segmenti
             cerr << "Il poligono ha area nulla" << endl;
             check_area = false;
     }
