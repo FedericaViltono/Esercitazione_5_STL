@@ -83,36 +83,10 @@ int main()
     }
     cout << std::endl; 
 
-/*
-    //cout << mesh.NumCell0Ds << endl;
-    //cout << mesh.Cell0DsCoordinates << endl;
-
-    cout << "CICLO PER SAPERE GLI ESTREMI" << endl;
-    for (int i = 0; i < mesh.Cell1DsExtrema.rows(); ++i)
-    {
-        for (int j = 0; j < mesh.Cell1DsExtrema.cols(); ++j)
-        {
-            std::cout << mesh.Cell1DsExtrema(i, j) << " "; 
-        }
-        std::cout << std::endl; 
-    }
-
-    cout << "CICLO CHE UNISCE ID E COORDINATE" << endl;
-    for (const auto& coppia : mesh.IdCoordCell0Ds) 
-    {
-        cout << coppia.first << ": ";
-        for (const auto& element : coppia.second)
-        {
-            cout << element << " ";  
-        }
-        cout << '\n';
-    }
-*/
-
     // Lati con lunghezza non nulla
     cout << "Controllo lunghezza lati non nulla:" << endl;
     double epsilon = std::numeric_limits<double>::epsilon();
-    bool check = true;
+    bool check_lunghezza = true;
 
     for (int i = 0; i < mesh.Cell1DsExtrema.cols(); i+=2)
     {   
@@ -129,74 +103,48 @@ int main()
 
         if (distanza < epsilon)
             cerr << "Il lato ha lunghezza nulla" << endl;
-            check = false;
+            check_lunghezza = false;
     }
 
-    if (check = true)
+    if (check_lunghezza = true)
         cout << "Tutti i lati hanno lunghezza non nulla" << endl;
 
     cout << std::endl; 
 
-
     // Poligoni con area non nulla
-    //for (int i = 0; i < mesh.Cell1DsExtrema.cols(); i+=2)
-/*
-    // Memorizza id-coordinate
-    const auto iss = mesh.IdPoligonoCell2Ds.find(id);
-    if (iss == mesh.IdPoligonoCell2Ds.end())
+    cout << "Controllo area poligoni non nulla:" << endl;
+    bool check_area = true;
+    for (unsigned int i = 0; i < mesh.Cell2DsVertices.size(); i++)
     {
-        mesh.IdPoligonoCell2Ds.insert({id, {      }});
-    }
-    else
-    {
-        it->second.push_back(id);
-    }
-*/
+        double area = 0.0; 
 
-
-
-
-
-
-
-/*
-    cout << "CELL2Ds" << endl;
-    for (int i = 0; i < mesh.Cell2DsVertices.size(); i++)
-    {
-        for (int j = 0; j < mesh.Cell2DsVertices[i].size(); j++)
+        for (unsigned int j = 0; j < mesh.Cell2DsVertices[i].size(); j++)
         {
-            std::cout << mesh.Cell2DsVertices[i][j]} << " "; 
+            unsigned int chiave = mesh.Cell2DsVertices[i][j];
+            if (mesh.IdCoordCell0Ds.find(chiave) != mesh.IdCoordCell0Ds.end()) 
+            {
+                double x = mesh.IdCoordCell0Ds[chiave][0];
+                double y = mesh.IdCoordCell0Ds[chiave][1];
+
+                unsigned int nextIndex = (j + 1) % mesh.Cell2DsVertices[i].size(); // Indice del vertice successivo: j + 1 prende l'elemento successivo e % size fa in modo che quando j è l'ultimo indice, torni a 0
+                unsigned int nextChiave = mesh.Cell2DsVertices[i][nextIndex];
+                double nextX = mesh.IdCoordCell0Ds[nextChiave][0];
+                double nextY = mesh.IdCoordCell0Ds[nextChiave][1];
+
+                area += (x * nextY - nextX * y);
+            } 
         }
-        std::cout << std::endl; 
+
+        area = std::abs(area) * 0.5; 
+
+        if (area < epsilon)
+            cerr << "Il poligono ha area nulla" << endl;
+            check_area = false;
     }
-    
 
-    vector<unsigned int>& vec_vert = mesh.Cell2DsVertices[id];
-    const unsigned int n = vec_vert.size();
+    if (check_area = true)
+    cout << "Tutti i poligoni hanno area non nulla" << endl;
 
-    double area = 0.0;
-    for(size_t i=0; i<n; i++)
-    {   
-        const unsigned int vi_id = vec_vert[i];
-        const unsigned int vj_id = vec_vert[(i+1)%n]; //To close the polygon and connect the first vertice and the last vertice I use j=(i+1)%n
-
-        const MatrixXd coord = mesh.Cell0DsCoordinates;
-        const double X_vi = coord(0, vi_id);
-        const double Y_vi = coord(1, vi_id);
-        const double X_vj = coord(0, vj_id);
-        const double Y_vj = coord(1, vj_id);
-
-        area += (X_vi * Y_vj) - (X_vj * Y_vi);
-    }
-    area = abs(area / 2.0);
-
-    if(area <= epsilon)
-    {
-        cerr<<"TEST NOT PASSED: the polygon  has area equal to zero";
-        return false;
-    }
-    cout << area << endl;
-*/
     return 0;
 }
 

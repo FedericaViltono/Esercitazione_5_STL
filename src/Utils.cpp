@@ -272,7 +272,10 @@ bool ImportCell2Ds(PolygonalMesh& mesh)
                 it->second.push_back(id);
             }
         }
+        
     }
+
+    return true;
 }
 
 }
